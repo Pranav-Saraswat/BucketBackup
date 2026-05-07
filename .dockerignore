@@ -1,0 +1,28 @@
+# Build artifacts
+node_modules
+.next
+dist
+build
+*.log
+
+# Source Control
+.git
+.gitignore
+
+# Infrastructure
+terraform
+k8s
+scripts
+
+# Documentation
+README.md
+docs
+
+# Environment
+.env
+.env.*
+*.sample
+
+# IDE
+.vscode
+.idea

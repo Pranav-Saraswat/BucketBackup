@@ -1,0 +1,37 @@
+{
+  "name": "bucketbackup",
+  "version": "1.0.0",
+  "description": "![Backup Automation](https://raw.githubusercontent.com/Pranav-Saraswat/Backup-Automation-for-Cloud-Storage-Buckets/master/backup-automation.png)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pranav-Saraswat/BucketBackup.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Pranav-Saraswat/BucketBackup/issues"
+  },
+  "homepage": "https://github.com/Pranav-Saraswat/BucketBackup#readme",
+  "dependencies": {
+    "@azure/storage-blob": "^12.31.0",
+    "@google-cloud/storage": "^7.19.0",
+    "@prisma/client": "^7.8.0",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.6.1",
+    "aws-sdk": "^2.1693.0",
+    "bullmq": "^5.76.6",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "prisma": "^7.8.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3",
+    "winston": "^3.19.0"
+  }
+}

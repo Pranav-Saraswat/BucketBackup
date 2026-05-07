@@ -1,116 +1,113 @@
-# ☁️ Backup Automation for Cloud Storage Buckets
+# ☁️ BucketBackup | Enterprise-Grade Cloud Backup & Disaster Recovery
 
-![Backup Automation](https://raw.githubusercontent.com/Pranav-Saraswat/Backup-Automation-for-Cloud-Storage-Buckets/master/backup-automation.png)
+![BucketBackup Banner](./bucketbackup.png)
 
+[![Next.js](https://img.shields.io/badge/Frontend-Next.js%2014-black?style=flat&logo=next.js)](https://nextjs.org/)
+[![Node.js](https://img.shields.io/badge/Backend-Node.js-green?style=flat&logo=node.js)](https://nodejs.org/)
 [![Terraform](https://img.shields.io/badge/IaC-Terraform-blue?style=flat&logo=terraform)](https://www.terraform.io/)
-[![AWS S3](https://img.shields.io/badge/Storage-AWS%20S3-orange?style=flat&logo=amazonaws)](https://aws.amazon.com/s3/)
-[![GCP Storage](https://img.shields.io/badge/Storage-GCP%20Cloud%20Storage-red?style=flat&logo=googlecloud)](https://cloud.google.com/storage/)
-[![GitHub Actions](https://img.shields.io/badge/CI/CD-GitHub%20Actions-blue?style=flat&logo=githubactions)](https://github.com/features/actions)
+[![Multi-Cloud](https://img.shields.io/badge/Storage-AWS%20|%20GCP%20|%20Azure-blue?style=flat)](https://aws.amazon.com/)
+[![Kubernetes](https://img.shields.io/badge/Deployment-Kubernetes-blue?style=flat&logo=kubernetes)](https://kubernetes.io/)
 
-This project automates backups from a local directory to **AWS S3** and **GCP Cloud Storage** using **Terraform**, **Bash**, and **GitHub Actions**.
-
----
-
-## 📚 Table of Contents
-- [Features](#-features)
-- [Prerequisites](#-prerequisites)
-- [Setup AWS & GCP Credentials](#-setup-aws--gcp-credentials)
-- [Store Secrets in GitHub](#-store-secrets-in-github)
-- [Deploy with Terraform](#-deploy-with-terraform)
-- [Automate Backups](#-automate-backups-with-github-actions)
-- [Project Structure](#-project-structure)
-- [License](#-license)
-- [Contact](#-contact)
+BucketBackup is a production-ready, intelligent cloud backup and disaster recovery platform. It orchestrates secure, scalable backups across **AWS S3, Google Cloud Storage, and Azure Blob Storage** with real-time monitoring and AI-powered anomaly detection.
 
 ---
 
-## 🎯 Features
-✅ **Backup files from local storage to AWS S3 & GCP**  
-✅ **Automated daily backups via GitHub Actions**  
-✅ **Compression, versioning, and verification included**  
-✅ **Slack/Webhook notifications on success or failure**  
-✅ **Terraform-managed cloud infrastructure**  
+## 🚀 Features
 
----
-
-## 🛠 Prerequisites
-1. **Terraform Installed** → [Download Here](https://developer.hashicorp.com/terraform/downloads)
-2. **AWS CLI Installed & Configured** → [Guide](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
-3. **GCP SDK Installed & Configured** → [Guide](https://cloud.google.com/sdk/docs/install)
-4. **GitHub Repository with Secrets** (AWS & GCP credentials)
-
----
-
-## 🔐 Setup AWS & GCP Credentials
-
-### **AWS Credentials**
-```bash
-aws configure
-```
-Add the following secrets to GitHub:
-- `AWS_ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
-- `AWS_REGION`
-
-### **GCP Credentials**
-Create a **Service Account Key** and save it as `gcp-key.json`. Then, add its content as a GitHub Secret:
-- `GCP_SERVICE_ACCOUNT_KEY`
-
----
-
-## 🔑 Store Secrets in GitHub
-Navigate to **GitHub → Your Repository → Settings → Secrets** and add:
-- `AWS_ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
-- `AWS_REGION`
-- `GCP_SERVICE_ACCOUNT_KEY`
-- `SLACK_WEBHOOK_URL` (Optional)
-
----
-
-## 🚀 Deploy with Terraform
-```bash
-terraform init
-terraform apply -auto-approve
-```
-✔ This will create **AWS S3 & GCP Storage Buckets**.
-
----
-
-## 🤖 Automate Backups with GitHub Actions
-Push your changes to trigger the workflow:
-```bash
-git add .
-git commit -m "Initial backup automation setup"
-git push origin main
-```
-✔ GitHub Actions will now **run the backup daily at 2 AM UTC**.
+✅ **Multi-Cloud Mastery**: Native support for AWS, GCP, and Azure storage.  
+✅ **Intelligent Scheduling**: Automated cron-based and event-driven backup orchestration.  
+✅ **Real-time Dashboard**: Stunning Next.js 14 dashboard with live analytics and job health.  
+✅ **AI Anomaly Detection**: Proactive monitoring for data corruption or unusual storage patterns.  
+✅ **Disaster Recovery**: One-click restore workflows and cross-region replication.  
+✅ **Enterprise Security**: Encryption at rest/transit, RBAC, and secure secret management.  
+✅ **Cloud Native**: Fully containerized (Docker) and Kubernetes-ready (Helm/Manifests).  
+✅ **IaC Powered**: Infrastructure deployment via Terraform for predictable environments.  
 
 ---
 
 ## 📂 Project Structure
-```
+
+```text
 .
-├── .github/
-│   └── workflows/
-│       └── github_action_backup.yml
-├── terraform/
-│   ├── providers.tf
-│   ├── aws_s3.tf
-│   ├── gcp_storage.tf
-├── scripts/
-│   ├── deploy.sh
-│   ├── cleanup.sh
-├── .env
-├── README.md
+├── client/          # Next.js 14 Frontend Dashboard
+├── server/          # Node.js/TypeScript API & Sync Engine
+├── terraform/       # Infrastructure as Code (AWS, GCP, Azure)
+├── k8s/             # Kubernetes Deployment Manifests
+├── scripts/         # Helper & Migration scripts
+└── shared/          # Shared types and utilities
 ```
+
+---
+
+## 🛠 Prerequisites
+
+1. **Node.js v20+** & **npm/yarn**
+2. **Docker** & **Kubernetes** (Minikube or Kind for local dev)
+3. **Terraform** (for infrastructure provisioning)
+4. **Cloud Credentials**: Access keys for AWS, GCP Service Account, and Azure Connection Strings.
+
+---
+
+## 🚀 Getting Started
+
+### 1. Infrastructure Setup
+Provision your cloud buckets using Terraform:
+```bash
+cd terraform
+terraform init
+terraform apply -auto-approve
+```
+
+### 2. Backend Setup
+Configure your environment variables in `server/.env`:
+```bash
+cd server
+npm install
+npx prisma generate
+npm run dev
+```
+
+### 3. Frontend Setup
+Launch the dashboard:
+```bash
+cd client
+npm install
+npm run dev
+```
+Visit `http://localhost:3000` to access the dashboard.
+
+---
+
+## 🐳 Deployment (Docker & K8s)
+
+Build images:
+```bash
+docker build -t bucketbackup-server ./server
+docker build -t bucketbackup-client ./client
+```
+
+Deploy to Kubernetes:
+```bash
+kubectl apply -f k8s/
+```
+
+---
+
+## 🛡 Security & Compliance
+
+- **Encryption**: All data is encrypted using AES-256 before being uploaded to cloud providers.
+- **Audit Logs**: Every backup job and access request is logged for compliance tracking.
+- **Integrity**: MD5/SHA-256 checksum validation ensures zero data corruption during transit.
 
 ---
 
 ## 📜 License
-This project is licensed under the **MIT License**.
+
+Distributed under the **MIT License**. See `LICENSE` for more information.
 
 ---
 
 ## 📞 Contact
-For any issues, open an **issue** on GitHub.
+
+Built with ❤️ by **Pranav Saraswat**  
+For support or enterprise inquiries, please open an issue on GitHub.
