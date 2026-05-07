@@ -1,17 +1,13 @@
 <div align="center">
-  
-  # ☁️ BucketBackup
-  ### **Enterprise-Grade Multi-Cloud Backup & Disaster Recovery**
 
-  [![Next.js](https://img.shields.io/badge/Frontend-Next.js%2014-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-  [![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/)
-  [![Terraform](https://img.shields.io/badge/IaC-Terraform-623CE4?style=for-the-badge&logo=terraform)](https://www.terraform.io/)
-  [![Kubernetes](https://img.shields.io/badge/Deployment-Kubernetes-326CE5?style=for-the-badge&logo=kubernetes)](https://kubernetes.io/)
-  [![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+# ☁️ BucketBackup
+### **Enterprise-Grade Multi-Cloud Backup & Disaster Recovery**
 
-  <img src="./bucketbackup.png" alt="BucketBackup Banner" width="100%">
+[![Next.js](https://img.shields.io/badge/Frontend-Next.js%2014-black?style=for-the-badge&logo=next.js)](https://nextjs.org/) [![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/) [![Terraform](https://img.shields.io/badge/IaC-Terraform-623CE4?style=for-the-badge&logo=terraform)](https://www.terraform.io/) [![Kubernetes](https://img.shields.io/badge/Deployment-Kubernetes-326CE5?style=for-the-badge&logo=kubernetes)](https://kubernetes.io/) [![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-  **BucketBackup** is a high-performance, intelligent orchestration platform designed to secure and synchronize your data across the world's leading cloud storage providers. Built for reliability, it ensures your enterprise data is always protected, versioned, and recoverable.
+<img src="./bucketbackup.png" alt="BucketBackup Banner" width="100%">
+
+**BucketBackup** is a high-performance, intelligent orchestration platform designed to secure and synchronize your data across the world's leading cloud storage providers. Built for reliability, it ensures your enterprise data is always protected, versioned, and recoverable.
 
 </div>
 
@@ -166,8 +162,10 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ---
 
 <div align="center">
-  Built with ❤️ by <b>Pranav Saraswat</b><br/>
-  <i>Empowering enterprises with intelligent cloud recovery.</i>
 
-  [Report Bug](https://github.com/Pranav-Saraswat/BucketBackup/issues) · [Request Feature](https://github.com/Pranav-Saraswat/BucketBackup/issues)
+Built with ❤️ by **Pranav Saraswat**  
+*Empowering enterprises with intelligent cloud recovery.*
+
+[Report Bug](https://github.com/Pranav-Saraswat/BucketBackup/issues) · [Request Feature](https://github.com/Pranav-Saraswat/BucketBackup/issues)
+
 </div>
