@@ -2,7 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
+import authRoutes from './routes/auth-routes';
+import storageRoutes from './routes/storage-routes';
 import backupRoutes from './routes/backup-routes';
+import historyRoutes from './routes/history-routes';
+import monitoringRoutes from './routes/monitoring-routes';
+import healthRoutes from './routes/health-routes';
 import { BackupScheduler } from './services/scheduler';
 
 dotenv.config();
@@ -15,11 +20,13 @@ const PORT = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/storage', storageRoutes);
 app.use('/api/backups', backupRoutes);
+app.use('/api/history', historyRoutes);
+app.use('/api/monitoring', monitoringRoutes);
+app.use('/api/system', healthRoutes);
 
 app.listen(PORT, async () => {
   console.log(`🚀 BucketBackup Server running on port ${PORT}`);

@@ -9,6 +9,10 @@ resource "azurerm_storage_account" "backup" {
   location                 = azurerm_resource_group.backup.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
+
+  # Enforce TLS 1.2 and HTTPS only
+  min_tls_version           = "TLS1_2"
+  https_traffic_only_enabled = true
 }
 
 resource "azurerm_storage_container" "backup" {
@@ -17,13 +21,12 @@ resource "azurerm_storage_container" "backup" {
   container_access_type = "private"
 }
 
-variable "azure_location" {
-  default = "East US"
+output "azure_storage_account_name" {
+  value       = azurerm_storage_account.backup.name
+  description = "The target Azure Storage Account name."
 }
 
-variable "azure_storage_account_name" {}
-variable "azure_container_name" {}
-
-output "azure_storage_account_name" {
-  value = azurerm_storage_account.backup.name
+output "azure_storage_container_url" {
+  value       = "https://${azurerm_storage_account.backup.name}.blob.core.windows.net/${azurerm_storage_container.backup.name}"
+  description = "The target Azure Blob Container URL."
 }

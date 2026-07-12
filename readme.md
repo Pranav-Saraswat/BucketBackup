@@ -62,110 +62,169 @@ graph TD
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Getting Started & Configuration
 
 ### 📋 Prerequisites
-
-Before you begin, ensure you have the following installed:
-- **Node.js (v20+)** and **npm/pnpm**
-- **Docker** & **Kubernetes** (for deployment)
-- **Terraform** (for cloud provisioning)
-- **Cloud Accounts**: Active subscriptions for AWS, GCP, and Azure.
-
-### ⚙️ Quick Installation
-
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/Pranav-Saraswat/BucketBackup.git
-   cd BucketBackup
-   ```
-
-2. **Provision Infrastructure**
-   ```bash
-   cd terraform
-   terraform init
-   terraform apply -auto-approve
-   ```
-
-3. **Initialize the Backend**
-   ```bash
-   cd ../server
-   npm install
-   cp .env.example .env # Configure your keys here
-   npx prisma generate
-   npm run dev
-   ```
-
-4. **Launch the Dashboard**
-   ```bash
-   cd ../client
-   npm install
-   npm run dev
-   ```
-
-Visit **`http://localhost:3000`** to start managing your buckets.
+* **Node.js (v20+)** and **npm**
+* **Docker & Kubernetes** (with Ingress NGINX enabled for cluster deployments)
+* **Terraform (v1.5+)** (for multi-cloud bucket provisioning)
+* **PostgreSQL** database instance (or run via Kubernetes manifests)
 
 ---
 
-## 🐳 Deployment (Cloud-Native)
+### ⚙️ Environment Variables Configuration
 
-BucketBackup is designed to run anywhere. Use our pre-configured manifests for a production-ready Kubernetes setup.
-
-**Build the Containers:**
-```bash
-docker build -t bucketbackup-server ./server
-docker build -t bucketbackup-client ./client
+#### Backend Environment Variables (`server/.env`)
+Create a `.env` file in the `server` folder with the following variables:
+```env
+PORT=4000
+DATABASE_URL="postgresql://backupuser:supersecurepassword@localhost:5432/bucketbackup?schema=public"
+JWT_SECRET="generate-a-secure-jwt-random-token-secret-key"
+BACKEND_ENCRYPTION_KEY="your-aes-256-bit-key-for-credentials-at-rest"
+SLACK_WEBHOOK_URL="https://hooks.slack.com/services/..."
 ```
 
-**Deploy to Cluster:**
-```bash
-kubectl apply -f k8s/
+#### Frontend Environment Variables (`client/.env.local`)
+Create a `.env.local` file in the `client` folder:
+```env
+NEXT_PUBLIC_API_URL="http://localhost:4000/api"
 ```
 
 ---
 
-## 🛡️ Security & Compliance
+### 🔐 Provider Onboarding Credentials Setup
 
-We prioritize the integrity of your data above all else.
+To sync data across AWS, GCP, and Azure, you must provision access keys with the following least-privilege permissions:
 
-*   **Encryption at Rest**: All storage buckets are configured with SSE (Server-Side Encryption).
-*   **Encryption in Transit**: TLS 1.3 enforced for all data movement.
-*   **Auditability**: Complete logging of every file operation and administrative action.
-*   **Integrity Checks**: Automated MD5/SHA-256 checksums verify data consistency after every sync.
+#### 1. AWS S3 Credentials
+* **Policy Action**: `s3:ListBucket`, `s3:GetObject`, `s3:PutObject`, `s3:DeleteObject`
+* **Onboarding Fields**: Bucket Name, Region, Access Key ID, Secret Access Key.
+
+#### 2. Google Cloud Storage (GCP GCS)
+* **IAM Role**: `Storage Object Admin`
+* **Setup**: Create a Service Account, generate a JSON key, and copy the entire JSON content into the onboarding key field.
+
+#### 3. Azure Blob Storage
+* **Onboarding Fields**: Container Name, Storage Account Connection String.
+* **Format**: `DefaultEndpointsProtocol=https;AccountName=<name>;AccountKey=<key>;EndpointSuffix=core.windows.net`
 
 ---
 
-## 🗺️ Roadmap
+### 💻 Local Development Workflow
 
-- [ ] **v1.5**: Support for On-Premise S3 (MinIO).
-- [ ] **v1.8**: Deep Learning models for Predictive Storage Cost Optimization.
-- [ ] **v2.0**: Blockchain-based immutable audit logs.
+#### 1. Initialize Relational Database Schema
+Apply the Prisma schemas and generate local Prisma Clients:
+```bash
+cd server
+npm install
+npx prisma generate
+```
+
+#### 2. Launch Backend API Server
+```bash
+npm run dev
+```
+
+#### 3. Launch Frontend Client Dashboard
+```bash
+cd ../client
+npm install
+npm run dev
+```
+Visit **`http://localhost:3000`** to open the dashboard interface.
 
 ---
 
-## 🤝 Contributing
+### 🧪 Executing Automated Tests
 
-Contributions make the open-source community an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Run the complete Jest test suite (unit tests and integration tests) using the package runner:
+```bash
+cd server
+npm run test
+```
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+---
+
+### 🏗️ Infrastructure Provisioning (Terraform)
+
+Provision the necessary S3, GCS, and Azure Blob storage structures on your active accounts:
+```bash
+cd terraform
+terraform init
+terraform plan
+terraform apply -auto-approve
+```
+
+---
+
+### 🐳 Kubernetes Cluster Deployment
+
+To deploy the production-ready stack (PostgreSQL state, api server, client server, HPA scaling policies, Ingress rules) to your cluster:
+
+1. **Build Container Images**:
+   ```bash
+   docker build -t bucketbackup-server:latest ./server
+   docker build -t bucketbackup-client:latest ./client
+   ```
+2. **Apply Kubernetes Manifests**:
+   ```bash
+   kubectl apply -f k8s/
+   ```
+3. **Verify Deployment Services**:
+   ```bash
+   kubectl get pods -w
+   kubectl get ingress
+   ```
+
+---
+
+## 📖 API Endpoint Documentation Reference
+
+All endpoints (except Authentication and Health check) require a `Bearer <token>` authentication header.
+
+### 👤 Authentication API
+* `POST /api/auth/register` - Create user account and organization workspace.
+* `POST /api/auth/login` - Sign in operator. Returns JWT bearer token.
+* `GET /api/auth/me` - Fetch details on active operator profile.
+
+### 🗄️ Storage Onboarding API
+* `POST /api/storage` - Register a new cloud storage target (AWS/GCP/Azure).
+* `GET /api/storage` - List safe-masked configurations for organization.
+* `POST /api/storage/:id/verify` - Trigger connection check to verify cloud keys.
+* `GET /api/storage/:id/inventory` - Fetch list of files and folders inside bucket.
+
+### 🔄 Sync Jobs Orchestration API
+* `POST /api/backups` - Create a sync job schedule (cron, one-way/bidirectional, source, destination).
+* `GET /api/backups` - List backup job schedules.
+* `PUT /api/backups/:id` - Edit parameters of a job rule.
+* `DELETE /api/backups/:id` - Delete job rule and unschedule cron tasks.
+* `POST /api/backups/:id/trigger` - Force immediate manual backup run.
+* `POST /api/backups/:id/pause` - Disable scheduler for a job.
+* `POST /api/backups/:id/resume` - Re-enable cron scheduling.
+* `GET /api/backups/:id/logs` - Retrieve execution logs for job.
+
+### 🛡️ Disaster Recovery Restore API
+* `POST /api/history/restores` - Initiate point-in-time file recovery.
+* `GET /api/history/restores` - List DR restore runs.
+* `GET /api/history/restores/:id` - Check progress of a restore job.
+
+### 📊 Monitoring & Alerts API
+* `GET /api/monitoring/audits` - Fetch administrative action audit logs.
+* `GET /api/monitoring/alerts` - List active data anomalies or duration spikes.
+* `POST /api/monitoring/alerts/:id/resolve` - Dismiss warning alerts.
+
+### 📈 System Metrics API
+* `GET /api/system/health` - Liveness probe endpoint.
+* `GET /api/system/metrics` - Fetch real-time host CPU, memory, and database counters.
 
 ---
 
 ## 📜 License
-
 Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
 <div align="center">
-
-Built with ❤️ by **Pranav Saraswat**  
+Built with ❤️ by <strong>Pranav Saraswat</strong>  
 *Empowering enterprises with intelligent cloud recovery.*
-
-[Report Bug](https://github.com/Pranav-Saraswat/BucketBackup/issues) · [Request Feature](https://github.com/Pranav-Saraswat/BucketBackup/issues)
-
 </div>

@@ -7,8 +7,9 @@
 
     // Environment Settings
     "module": "CommonJS",
+    "moduleResolution": "bundler",
     "target": "es2020",
-    "types": ["node"],
+    "types": ["node", "jest"],
 
     // Other Outputs
     "sourceMap": true,
@@ -24,6 +25,7 @@
     "verbatimModuleSyntax": false,
     "isolatedModules": true,
     "skipLibCheck": true,
+    "esModuleInterop": true,
   },
   "exclude": ["node_modules", "dist", "prisma.config.ts"]
 }

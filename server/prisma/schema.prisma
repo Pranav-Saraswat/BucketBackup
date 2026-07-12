@@ -9,43 +9,142 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id             String       @id @default(uuid())
+  email          String       @unique
+  passwordHash   String
+  name           String
+  role           String       @default("Operator") // "Admin", "Operator", "Viewer"
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Organization {
+  id             String          @id @default(uuid())
+  name           String
+  users          User[]
+  storageConfigs StorageConfig[]
+  backupJobs     BackupJob[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
 model StorageConfig {
-  id                String   @id @default(uuid())
-  provider          String   // "aws", "gcp", "azure"
+  id                String       @id @default(uuid())
+  provider          String       // "aws", "gcp", "azure"
   bucketName        String
   region            String?
-  accessKey         String?  // Encrypted
-  secretKey         String?  // Encrypted
-  connectionString  String?  // Encrypted for Azure
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  backupJobs        BackupJob[]
+  accessKey         String?      // Encrypted
+  secretKey         String?      // Encrypted
+  connectionString  String?      // Encrypted for Azure
+  gcpKeyFile        String?      // Encrypted GCP key JSON
+  organizationId    String
+  organization      Organization @relation(fields: [organizationId], references: [id])
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  backupJobsDest    BackupJob[]  @relation("DestStorageConfig")
+  backupJobsSource  BackupJob[]  @relation("SourceStorageConfig")
+  restoreJobsTarget RestoreJob[]
 }
 
 model BackupJob {
-  id              String   @id @default(uuid())
+  id              String         @id @default(uuid())
   name            String
   description     String?
-  sourcePath      String
+  syncMode        String         @default("one-way") // "one-way", "bidirectional"
+  sourceType      String         @default("local") // "local", "cloud"
+  sourcePath      String         // Local path, or cloud folder prefix
+  sourceConfigId  String?
+  sourceConfig    StorageConfig? @relation("SourceStorageConfig", fields: [sourceConfigId], references: [id])
+  destConfigId    String
+  destConfig      StorageConfig  @relation("DestStorageConfig", fields: [destConfigId], references: [id])
   cronExpression  String?
-  status          String   @default("idle") // "idle", "running", "failed", "completed"
-  storageConfigId String
-  storageConfig   StorageConfig @relation(fields: [storageConfigId], references: [id])
+  status          String         @default("idle") // "idle", "running", "paused", "failed", "completed"
   lastRun         DateTime?
   nextRun         DateTime?
+  organizationId  String
+  organization    Organization   @relation(fields: [organizationId], references: [id])
   logs            BackupLog[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  jobRuns         JobRun[]
+  restoreJobs     RestoreJob[]
+  alerts          Alert[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model JobRun {
+  id                String    @id @default(uuid())
+  jobId             String
+  job               BackupJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  status            String    // "running", "completed", "failed", "cancelled"
+  startedAt         DateTime  @default(now())
+  completedAt       DateTime?
+  durationMs        Int?
+  filesTotal        Int       @default(0)
+  filesSynced       Int       @default(0)
+  bytesSynced       BigInt    @default(0)
+  errorMessage      String?
+  checksumsVerified Boolean   @default(false)
 }
 
 model BackupLog {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   jobId       String
-  job         BackupJob @relation(fields: [jobId], references: [id])
+  job         BackupJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
   status      String
   message     String
   fileSize    BigInt?
   durationMs  Int?
   checksum    String?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime  @default(now())
+}
+
+model RestoreJob {
+  id             String        @id @default(uuid())
+  backupJobId    String
+  backupJob      BackupJob     @relation(fields: [backupJobId], references: [id])
+  checkpointRunId String?
+  targetConfigId String
+  targetConfig   StorageConfig @relation(fields: [targetConfigId], references: [id])
+  targetPath     String
+  status         String        // "running", "completed", "failed"
+  startedAt      DateTime      @default(now())
+  completedAt    DateTime?
+  durationMs     Int?
+  filesRestored  Int           @default(0)
+  bytesRestored  BigInt        @default(0)
+  errorMessage   String?
+  createdAt      DateTime      @default(now())
+}
+
+model AuditEvent {
+  id         String   @id @default(uuid())
+  userId     String?
+  userEmail  String?
+  action     String
+  details    String
+  createdAt  DateTime @default(now())
+}
+
+model Alert {
+  id        String    @id @default(uuid())
+  jobId     String
+  job       BackupJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  type      String    // "failure", "anomaly", "duration_spike"
+  severity  String    // "info", "warning", "critical"
+  message   String
+  resolved  Boolean   @default(false)
+  createdAt DateTime  @default(now())
+}
+
+model HealthSnapshot {
+  id             String   @id @default(uuid())
+  cpuUsage       Float
+  memoryUsage    Float
+  diskUsage      Float
+  apiLatencyMs   Int
+  activeWorkers  Int
+  createdAt      DateTime @default(now())
 }
